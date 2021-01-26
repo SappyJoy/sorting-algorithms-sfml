@@ -8,14 +8,13 @@
 #include <algorithm>
 
 const sf::Time Application::time_per_frame = sf::seconds(1.f / 60.f);
-const sf::Time Application::time_per_move = sf::seconds(1.f / 60.f);
+const sf::Time Application::time_per_move = sf::seconds(1.f / 5.f);
 
 Application::Application() :
 window(sf::VideoMode(DISPLAY_WIDTH, DISPLAY_HEIGHT), "Sorting", sf::Style::Close),
 rectangle_array(create_rectangle_array(ARRAY_LENGTH)),
 next(false),
-sort(false),
-sorting(false)
+sort(false)
 {}
 
 void Application::run() {
@@ -61,19 +60,20 @@ void Application::update(sf::Time time) {
   static int move_ind = 0;
   time_since_last_array_move += time;
 
-  if (sort) {
+  if (sort == 1) {
     // Сортируем массив и возвращаем массив действий
-    sort = false;
-    sorting = true;
-    moves = bubble_sort(array, ARRAY_LENGTH);
+    sort = 2;
+    moves = selection_sort(array, ARRAY_LENGTH);
   }
 
-  if (sorting && time_since_last_array_move > time_per_move) {
+  if (sort == 2 && time_since_last_array_move > time_per_move) {
     time_since_last_array_move = sf::Time::Zero;
 
     swap_rectangles(rectangle_array[(*moves)[move_ind].first], rectangle_array[(*moves)[move_ind].second]);
 
     move_ind++;
+    if (move_ind == moves->size())
+      sort = 3;
   }
     /* Обновляем рабочий массив */
   if (next) {
@@ -81,7 +81,7 @@ void Application::update(sf::Time time) {
     delete [] array;
     rectangle_array = create_rectangle_array(ARRAY_LENGTH);
     next = false;
-    sorting = false;
+    sort = 0;
     move_ind = 0;
   }
 }
@@ -97,7 +97,7 @@ void Application::handle_player_input(sf::Keyboard::Key key, bool is_pressed) {
   if (key == sf::Keyboard::Space) {
     next = is_pressed;
   }
-  if (key == sf::Keyboard::S && is_pressed && !sorting) {
+  if (key == sf::Keyboard::S && is_pressed && sort != 2 && sort != 3) {
     sort = true;
   }
 }

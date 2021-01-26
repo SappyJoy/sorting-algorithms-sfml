@@ -29,8 +29,7 @@ class Application {
   static const sf::Time time_per_frame;
   static const sf::Time time_per_move;
   bool next;
-  bool sort;
-  bool sorting;
+  int sort; // 0 - wait/stop  1 - start  2 - continue  3 - sorted
   std::vector<std::pair<unsigned, unsigned>>* moves;
 
   static const unsigned int DISPLAY_WIDTH = 720;
