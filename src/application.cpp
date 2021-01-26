@@ -4,13 +4,18 @@
 #include <random>
 #include <iostream>
 #include "application.h"
+#include "algorithms.h"
+#include <algorithm>
 
 const sf::Time Application::time_per_frame = sf::seconds(1.f / 60.f);
+const sf::Time Application::time_per_move = sf::seconds(1.f / 60.f);
 
 Application::Application() :
 window(sf::VideoMode(DISPLAY_WIDTH, DISPLAY_HEIGHT), "Sorting", sf::Style::Close),
 rectangle_array(create_rectangle_array(ARRAY_LENGTH)),
-next(false)
+next(false),
+sort(false),
+sorting(false)
 {}
 
 void Application::run() {
@@ -44,12 +49,40 @@ void Application::process_events() {
   }
 }
 
-void Application::update(sf::Time) {
-  /* Обновляем рабочий массив */
+void Application::swap_rectangles(sf::RectangleShape &shape1, sf::RectangleShape &shape2) {
+  auto temp = shape1.getSize().y;
+  shape1.setSize(sf::Vector2f(shape1.getSize().x, shape2.getSize().y));
+  shape2.setSize(sf::Vector2f(shape2.getSize().x, temp));
+}
+
+void Application::update(sf::Time time) {
+  // Необходимо, чтобы анимация происходила с определённой скоростью
+  static sf::Time time_since_last_array_move = sf::Time::Zero;
+  static int move_ind = 0;
+  time_since_last_array_move += time;
+
+  if (sort) {
+    // Сортируем массив и возвращаем массив действий
+    sort = false;
+    sorting = true;
+    moves = bubble_sort(array, ARRAY_LENGTH);
+  }
+
+  if (sorting && time_since_last_array_move > time_per_move) {
+    time_since_last_array_move = sf::Time::Zero;
+
+    swap_rectangles(rectangle_array[(*moves)[move_ind].first], rectangle_array[(*moves)[move_ind].second]);
+
+    move_ind++;
+  }
+    /* Обновляем рабочий массив */
   if (next) {
     delete [] rectangle_array;
+    delete [] array;
     rectangle_array = create_rectangle_array(ARRAY_LENGTH);
     next = false;
+    sorting = false;
+    move_ind = 0;
   }
 }
 
@@ -61,8 +94,12 @@ void Application::render() {
 }
 
 void Application::handle_player_input(sf::Keyboard::Key key, bool is_pressed) {
-  if (key == sf::Keyboard::Space)
+  if (key == sf::Keyboard::Space) {
     next = is_pressed;
+  }
+  if (key == sf::Keyboard::S && is_pressed && !sorting) {
+    sort = true;
+  }
 }
 
 int * Application::create_random_array(size_t size) {
@@ -79,8 +116,10 @@ int * Application::create_random_array(size_t size) {
   return array;
 }
 
+
+// For new rectangle array you need delete Application::array
 sf::RectangleShape * Application::create_rectangle_array(size_t size) {
-  int *array = create_random_array(ARRAY_LENGTH);
+  array = create_random_array(ARRAY_LENGTH);
   sf::RectangleShape *rectangle_array = new sf::RectangleShape[ARRAY_LENGTH];
 
   // There will be 0.025 * DISPLAY_WIDTH margin from left and right
@@ -94,6 +133,5 @@ sf::RectangleShape * Application::create_rectangle_array(size_t size) {
     rectangle_array[i].setPosition(0.025 * DISPLAY_WIDTH + (rectangle_width + 2 * rectangle_margin) * i + rectangle_margin, DISPLAY_HEIGHT);
   }
 
-  delete [] array;
   return rectangle_array;
 }
