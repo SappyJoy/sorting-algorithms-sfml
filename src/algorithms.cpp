@@ -1,7 +1,7 @@
 //
 // Created by sappy-joy on 26/01/2021.
 //
-
+#include <iostream>
 #include "algorithms.h"
 
 void swap(int *a, int *b) {
@@ -103,6 +103,67 @@ std::vector<std::pair<unsigned, unsigned>>* recursive_insertion_sort(int *array,
   return moves;
 }
 
-std::vector<std::pair<unsigned, unsigned>>* merge_sort(int *array, size_t size) {
+void merge(int *array, size_t l, size_t m, size_t r, std::vector<std::pair<unsigned, unsigned>> *moves) {
+  size_t n1 = m - l + 1;
+  size_t n2 = r - m;
 
+  // Temp arrays
+  int L[n1], R[n2];
+
+  // Copy data to temp arrays
+  for (size_t i = 0; i < n1; i++)
+    L[i] = array[l + i];
+  for (size_t i = 0; i < n2; i++)
+    R[i] = array[m + i + 1];
+
+  // Merge temp arrays into initial array
+  size_t i = 0;
+  size_t j = 0;
+  size_t k = l;
+  while (i < n1 && j < n2) {
+    if (L[i] < R[j]) {
+      array[k] = L[i];
+//      moves->push_back(std::make_pair(k, l + i));
+      i++;
+    } else {
+      array[k] = R[j];
+      // Сдвинуть весь массив L на m + j + 1 - k вправо
+      for (size_t shift = m + j + 1; shift > k; shift--) {
+        moves->push_back(std::make_pair(shift, shift - 1));
+      }
+      j++;
+    }
+    k++;
+  }
+
+  // Copy remaining elements
+  while (i < n1) {
+    array[k] = L[i];
+//    moves->push_back(std::make_pair(k, m + i));
+    i++;
+    k++;
+  }
+
+  while (j < n2) {
+    array[k] = R[j];
+//    moves->push_back(std::make_pair(k, m + 1 + j));
+    j++;
+    k++;
+  }
+}
+
+void merge_sort_helper(int *array, size_t l, size_t r, std::vector<std::pair<unsigned, unsigned>> *moves) {
+  if (r <= l)
+    return;
+
+  size_t middle = l + (r - l) / 2;
+  merge_sort_helper(array, l, middle, moves);
+  merge_sort_helper(array, middle + 1, r, moves);
+  merge(array, l, middle, r, moves);
+}
+
+std::vector<std::pair<unsigned, unsigned>>* merge_sort(int *array, size_t size) {
+  auto moves = new std::vector<std::pair<unsigned, unsigned>>;
+  merge_sort_helper(array, 0, size, moves);
+  return moves;
 }
