@@ -79,3 +79,30 @@ std::vector<std::pair<unsigned, unsigned>>* insertion_sort(int *array, size_t si
 
   return moves;
 }
+
+void recursive_insertion_sort_helper(int *array, size_t size, std::vector<std::pair<unsigned, unsigned>> *moves) {
+
+  if (size == 1)
+    return;
+
+  recursive_insertion_sort_helper(array, size - 1, moves);
+
+  int key = array[size - 1];
+  size_t j = size - 2;
+  while (j >= 0 && array[j] > key) {
+    moves->push_back(std::make_pair(j + 1, j));
+    array[j + 1] = array[j];
+    j--;
+  }
+  array[j + 1] = key;
+}
+
+std::vector<std::pair<unsigned, unsigned>>* recursive_insertion_sort(int *array, size_t size) {
+  auto moves = new std::vector<std::pair<unsigned, unsigned>>;
+  recursive_insertion_sort_helper(array, size, moves);
+  return moves;
+}
+
+std::vector<std::pair<unsigned, unsigned>>* merge_sort(int *array, size_t size) {
+
+}
