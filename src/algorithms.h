@@ -23,5 +23,7 @@ std::vector<std::pair<unsigned, unsigned>>* recursive_insertion_sort(int *array,
 
 std::vector<std::pair<unsigned, unsigned>>* merge_sort(int *array, size_t size);
 
+std::vector<std::pair<unsigned, unsigned>>* iterative_merge_sort(int *array, size_t size);
+
 
 #endif //SORTING_ALGORITHMS_SRC_ALGORITHMS_H_

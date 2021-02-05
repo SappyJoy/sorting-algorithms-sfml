@@ -4,6 +4,9 @@
 #include <iostream>
 #include "algorithms.h"
 
+/* Utilities */
+int min(int x, int y) { return (x<y)? x :y; }
+
 void swap(int *a, int *b) {
   int t = *a;
   *a = *b;
@@ -123,7 +126,6 @@ void merge(int *array, size_t l, size_t m, size_t r, std::vector<std::pair<unsig
   while (i < n1 && j < n2) {
     if (L[i] < R[j]) {
       array[k] = L[i];
-//      moves->push_back(std::make_pair(k, l + i));
       i++;
     } else {
       array[k] = R[j];
@@ -139,14 +141,12 @@ void merge(int *array, size_t l, size_t m, size_t r, std::vector<std::pair<unsig
   // Copy remaining elements
   while (i < n1) {
     array[k] = L[i];
-//    moves->push_back(std::make_pair(k, m + i));
     i++;
     k++;
   }
 
   while (j < n2) {
     array[k] = R[j];
-//    moves->push_back(std::make_pair(k, m + 1 + j));
     j++;
     k++;
   }
@@ -165,5 +165,19 @@ void merge_sort_helper(int *array, size_t l, size_t r, std::vector<std::pair<uns
 std::vector<std::pair<unsigned, unsigned>>* merge_sort(int *array, size_t size) {
   auto moves = new std::vector<std::pair<unsigned, unsigned>>;
   merge_sort_helper(array, 0, size, moves);
+  return moves;
+}
+
+std::vector<std::pair<unsigned, unsigned>>* iterative_merge_sort(int *array, size_t size) {
+  auto moves = new std::vector<std::pair<unsigned, unsigned>>;
+
+  for (size_t cur_size = 1; cur_size <= size -1; cur_size *= 2) {
+    for (size_t left_start = 0; left_start <= size - 1; left_start += 2 * cur_size) {
+      size_t mid = min(left_start + cur_size - 1, size - 1);
+      int right_end = min(left_start + 2 * cur_size - 1, size - 1);
+      merge(array, left_start, mid, right_end, moves);
+    }
+  }
+
   return moves;
 }
