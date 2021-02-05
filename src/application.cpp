@@ -63,7 +63,7 @@ void Application::update(sf::Time time) {
   if (sort == 1) {
     // Сортируем массив и возвращаем массив действий
     sort = 2;
-    moves = recursive_bubble_sort(array, ARRAY_LENGTH);
+    moves = insertion_sort(array, ARRAY_LENGTH);
   }
 
   if (sort == 2 && time_since_last_array_move > time_per_move) {
@@ -79,6 +79,7 @@ void Application::update(sf::Time time) {
   if (next) {
     delete [] rectangle_array;
     delete [] array;
+    delete moves;
     rectangle_array = create_rectangle_array(ARRAY_LENGTH);
     next = false;
     sort = 0;

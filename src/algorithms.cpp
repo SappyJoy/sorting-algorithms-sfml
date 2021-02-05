@@ -60,3 +60,22 @@ std::vector<std::pair<unsigned, unsigned>>* recursive_bubble_sort(int *array, si
   recursive_bubble_sort_helper(array, size, moves);
   return moves;
 }
+
+std::vector<std::pair<unsigned, unsigned>>* insertion_sort(int *array, size_t size) {
+  auto moves = new std::vector<std::pair<unsigned, unsigned>>;
+
+  int key;
+  size_t j = 1;
+  for (size_t i = 1; i < size; i++) {
+    key = array[i];
+    j = i - 1;
+    while (j >= 0 && array[j] > key) {
+      moves->push_back(std::make_pair(j + 1, j));
+      array[j + 1] = array[j];
+      j--;
+    }
+    array[j + 1] = key;
+  }
+
+  return moves;
+}
