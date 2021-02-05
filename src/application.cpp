@@ -8,7 +8,7 @@
 #include <algorithm>
 
 const sf::Time Application::time_per_frame = sf::seconds(1.f / 60.f);
-const sf::Time Application::time_per_move = sf::seconds(1.f / 5.f);
+const sf::Time Application::time_per_move = sf::seconds(1.f / 60.f);
 
 Application::Application() :
 window(sf::VideoMode(DISPLAY_WIDTH, DISPLAY_HEIGHT), "Sorting", sf::Style::Close),
@@ -28,8 +28,8 @@ void Application::run() {
       time_since_last_update -= time_per_frame;
       process_events();
       update(time_per_frame);
+      render();
     }
-    render();
   }
 }
 
@@ -63,7 +63,7 @@ void Application::update(sf::Time time) {
   if (sort == 1) {
     // Сортируем массив и возвращаем массив действий
     sort = 2;
-    moves = selection_sort(array, ARRAY_LENGTH);
+    moves = recursive_bubble_sort(array, ARRAY_LENGTH);
   }
 
   if (sort == 2 && time_since_last_array_move > time_per_move) {

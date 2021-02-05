@@ -10,5 +10,7 @@ std::vector<std::pair<unsigned, unsigned>>* bubble_sort(int *array, size_t size)
 
 std::vector<std::pair<unsigned, unsigned>>* selection_sort(int *array, size_t size);
 
+std::vector<std::pair<unsigned, unsigned>>* recursive_bubble_sort(int *array, size_t size);
+
 
 #endif //SORTING_ALGORITHMS_SRC_ALGORITHMS_H_
